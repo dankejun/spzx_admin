@@ -4,7 +4,7 @@
       label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">尚品甄选后台管理系统</h3>
       </div>
 
       <el-form-item prop="username">
@@ -29,23 +29,38 @@
         </el-form-item>
       </el-tooltip>
 
+      <el-form-item prop="captcha">
+        <div class="captcha">
+          <span class="svg-container">
+            <svg-icon icon-class="component"/>
+          </span>
+          <el-input
+              ref="captcha"
+              class="text"
+              v-model="loginForm.captcha"
+              placeholder="请输入验证码"
+          ></el-input>
+          <img :src="captchaSrc" @click="refreshCaptcha"  alt="验证码"/>
+        </div>
+      </el-form-item>
+
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.prevent="handleLogin">
         Login</el-button>
 
-      <div style="position:relative">
-        <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : any</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">Username : editor</span>
-          <span>Password : any</span>
-        </div>
+<!--      <div style="position:relative">-->
+<!--        <div class="tips">-->
+<!--          <span>Username : admin</span>-->
+<!--          <span>Password : any</span>-->
+<!--        </div>-->
+<!--        <div class="tips">-->
+<!--          <span style="margin-right:18px;">Username : editor</span>-->
+<!--          <span>Password : any</span>-->
+<!--        </div>-->
 
-        <el-button class="thirdparty-button" type="primary" @click="showDialog = true">
-          Or connect with
-        </el-button>
-      </div>
+<!--        <el-button class="thirdparty-button" type="primary" @click="showDialog = true">-->
+<!--          Or connect with-->
+<!--        </el-button>-->
+<!--      </div>-->
     </el-form>
 
     <el-dialog title="Or connect with" v-model="showDialog">
@@ -65,6 +80,7 @@ import SocialSign from './components/SocialSignin.vue';
 import type { FormItemRule } from 'element-plus';
 import type { IForm } from '@/types/element-plus';
 import store from '@/store';
+import { getValidateCode } from '@/api/user';
 
 interface QueryType {
   // 自定义key 任意字符串
@@ -89,14 +105,25 @@ export default defineComponent({
         callback();
       }
     };
+    const validateCaptcha: FormItemRule['validator'] = (_rule, value, callback) => {
+      if (value.length < 4) {
+        callback(new Error('请正确输入验证码'));
+      } else {
+        callback();
+      }
+    };
     return {
+      captchaSrc: '',
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '111111',
+        captcha: '',
+        codeKey: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        captcha: [{ required: true, trigger: 'blur', validator: validateCaptcha }]
       },
       passwordType: 'password',
       capsTooltip: false,
@@ -122,16 +149,24 @@ export default defineComponent({
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
+    this.refreshCaptcha();
     if (this.loginForm.username === '') {
       (this.$refs.username as HTMLElement).focus();
     } else if (this.loginForm.password === '') {
       (this.$refs.password as HTMLElement).focus();
+    } else if (this.loginForm.captcha === '') {
+      (this.$refs.captcha as HTMLElement).focus();
     }
   },
   unmounted() {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    async refreshCaptcha() {
+      const { data } = await getValidateCode();
+      this.loginForm.codeKey = data.codeKey;
+      this.captchaSrc = data.codeValue;
+    },
     checkCapslock(e) {
       const { key } = e;
       this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z');
@@ -253,7 +288,17 @@ $cursor: #fff;
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
+.captcha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
+.captcha img {
+  cursor: pointer;
+  margin-left: 20px;
+}
 .login-container {
   min-height: 100%;
   width: 100%;

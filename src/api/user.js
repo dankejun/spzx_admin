@@ -1,8 +1,16 @@
 import request from '@/utils/request';
 
+// 获取验证码
+export function getValidateCode() {
+  return request({
+    url: '/admin/system/index/generateValidateCode',
+    method: 'get'
+  });
+}
+
 export function login(data) {
   return request({
-    url: '/vue-element-admin/user/login',
+    url: '/admin/system/index/login',
     method: 'post',
     data
   });
