@@ -18,7 +18,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/vue-element-admin/user/info',
+    url: '/admin/system/index/getUserInfo',
     method: 'get',
     params: { token }
   });
@@ -26,8 +26,8 @@ export function getInfo(token) {
 
 export function logout(token) {
   return request({
-    url: '/vue-element-admin/user/logout',
-    method: 'post',
+    url: '/admin/system/index/logout',
+    method: 'get',
     params: { token }
   });
 }
