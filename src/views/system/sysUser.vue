@@ -54,9 +54,11 @@
       </el-form-item>
       <el-form-item label='头像'>
         <el-upload
-            class='avatar-uploader'
-            action='http://localhost:8501/admin/system/fileUpload'
-            :show-file-list='false'
+            class="avatar-uploader"
+            action="http://localhost:8501/admin/system/fileUpload"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :headers="headers"
         >
           <img v-if='sysUser.avatar' :src='sysUser.avatar' class='avatar' />
           <el-icon v-else class='avatar-uploader-icon'><Plus/></el-icon>
@@ -112,6 +114,7 @@
 import { ref, onMounted } from 'vue';
 import { DeleteSysUserById, GetSysUserListByPage, SaveSysUser, UpdateSysUser } from '@/api/sysUser';
 import { ElMessage } from 'element-plus';
+import { getToken } from '@/utils/auth.js';
 
 // 表格数据模型
 const list = ref([
@@ -228,6 +231,15 @@ const deleteById = (row) => {
       fetchData();
     }
   });
+};
+
+const headers = {
+  token: getToken()
+};
+
+// 图像上传成功以后的事件处理函数
+const handleAvatarSuccess = (response) => {
+  sysUser.value.avatar = response.data;
 };
 </script>
 
