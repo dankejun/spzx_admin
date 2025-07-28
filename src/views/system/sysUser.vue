@@ -95,12 +95,11 @@
         <el-button type="danger" size="small" @click="deleteById(scope.row)">
           删除
         </el-button>
-        <el-button type="warning" size="small">
+        <el-button type="warning" size="small" @click="showAssignRole(scope.row)">
           分配角色
         </el-button>
       </el-table-column>
     </el-table>
-
     <el-pagination
         v-model:current-page='pageParams.page'
         v-model:page-size='pageParams.limit'
@@ -108,14 +107,36 @@
         layout='total, sizes, prev, pager, next'
         :total='total'
     />
+
+    <el-dialog v-model="dialogRoleVisible" title="分配角色" width="40%">
+      <el-form label-width="80px">
+        <el-form-item label="用户名">
+          <el-input disabled :value="sysUser.userName"></el-input>
+        </el-form-item>
+
+        <el-form-item label="角色列表">
+          <el-checkbox-group v-model="userRoleIds">
+            <el-checkbox v-for="role in allRoles" :key="role.id" :label="role.id">
+              {{ role.roleName }}
+            </el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="doAssign">提交</el-button>
+          <el-button @click="dialogRoleVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { DeleteSysUserById, GetSysUserListByPage, SaveSysUser, UpdateSysUser } from '@/api/sysUser';
+import { DeleteSysUserById, DoAssignRoleToUser, GetSysUserListByPage, SaveSysUser, UpdateSysUser } from '@/api/sysUser';
 import { ElMessage } from 'element-plus';
 import { getToken } from '@/utils/auth.js';
+import { GetAllRoleList } from '@/api/sysRole.js';
 
 // 表格数据模型
 const list = ref([
@@ -241,6 +262,37 @@ const headers = {
 // 图像上传成功以后的事件处理函数
 const handleAvatarSuccess = (response) => {
   sysUser.value.avatar = response.data;
+};
+
+// 角色列表
+// 角色列表
+const userRoleIds = ref([]);
+const allRoles = ref([]);
+const dialogRoleVisible = ref(false);
+const showAssignRole = async row => {
+  sysUser.value = row;
+  dialogRoleVisible.value = true;
+
+  // 查询所有的角色数据
+  const { data } = await GetAllRoleList(row.id);
+  allRoles.value = data.allRolesList;
+
+  // 获取当前登录用户的角色数据
+  userRoleIds.value = data.sysUserRoles;
+};
+
+// 角色分配按钮事件处理函数
+const doAssign = async () => {
+  const assginRoleVo = {
+    userId: sysUser.value.id,
+    roleIdList: userRoleIds.value
+  };
+  const { code } = await DoAssignRoleToUser(assginRoleVo);
+  if (code === 200) {
+    ElMessage.success('操作成功');
+    dialogRoleVisible.value = false;
+    fetchData();
+  }
 };
 </script>
 

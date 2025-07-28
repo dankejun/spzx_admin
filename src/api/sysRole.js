@@ -34,3 +34,10 @@ export const DeleteSysRoleById = (roleId) => {
     method: 'delete'
   });
 };
+// 查询所有的角色数据
+export const GetAllRoleList = (userId) => {
+  return request({
+    url: '/admin/system/sysRole/findAllRoles/' + userId,
+    method: 'get'
+  });
+};
