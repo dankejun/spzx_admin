@@ -12,6 +12,7 @@ import chartsRouter from './modules/charts';
 import nestedRouter from './modules/nested';
 import tableRouter from './modules/table';
 import systemRouter from "@/router/modules/system";
+import productRouter from "@/router/modules/product";
 
 /**
  * constantRoutes
@@ -114,6 +115,7 @@ export const constantRoutes:RouteRecordRaw[] = [
  */
 export const asyncRoutes:RouteRecordRaw[] = [
   systemRouter,
+  productRouter,
   // {
   //   path: '/permission',
   //   component: Layout,

@@ -47,6 +47,9 @@ service.interceptors.response.use(
     const res = response.data;
     // if the custom code is not 200, it is judged as an error.
     if (res.code !== 200) {
+      if (response.status === 200) {
+        return res
+      }
       ElMessage({
         message: res.message || 'Error',
         type: 'error',
