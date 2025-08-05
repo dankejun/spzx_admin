@@ -1,5 +1,7 @@
 // 导入组件
 import brand from "@/views/product/brand.vue";
+import categoryBrand from "@/views/product/categoryBrand.vue";
+import productSpec from "@/views/product/productSpec.vue";
 
 const Layout = () => import('@/layout/index.vue');
 const category = () => import('@/views/product/category.vue');
@@ -28,6 +30,24 @@ const productRouter = {
       component: brand,
       meta: {
         title: '品牌管理'
+      },
+      hidden: false
+    },
+    {
+      path: '/categoryBrand',
+      name: 'categoryBrand',
+      component: categoryBrand,
+      meta: {
+        title: '分类品牌管理'
+      },
+      hidden: false
+    },
+    {
+      path: '/productSpec',
+      name: 'productSpec',
+      component: productSpec,
+      meta: {
+        title: '分类品牌管理'
       },
       hidden: false
     },
