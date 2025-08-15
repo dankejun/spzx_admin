@@ -2,6 +2,7 @@
 import brand from "@/views/product/brand.vue";
 import categoryBrand from "@/views/product/categoryBrand.vue";
 import productSpec from "@/views/product/productSpec.vue";
+import product from "@/views/product/product.vue";
 
 const Layout = () => import('@/layout/index.vue');
 const category = () => import('@/views/product/category.vue');
@@ -48,6 +49,15 @@ const productRouter = {
       component: productSpec,
       meta: {
         title: '分类品牌管理'
+      },
+      hidden: false
+    },
+    {
+      path: '/product',
+      name: 'product',
+      component: product,
+      meta: {
+        title: '商品管理'
       },
       hidden: false
     },
